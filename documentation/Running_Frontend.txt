@@ -1,0 +1,29 @@
+1. Download Node.js if you do not have it.
+    https://nodejs.org/
+    If you do you should see node -v and npm -v return a number in your command prompt
+    
+2. Open the frontend folder in your console and run "npm install"
+3. Then run "npm run dev" to start the frontend server and view at local link it gives.
+
+
+For editing
+Go to the source/app/ folder and edit the page.jsx file for the page you want to edit.
+page.jsx in the app folder is the first page that will appear so this will be the home page.
+The rest are under folders titled 'Report' and 'View'. The page.jsx file in each will correspond to each page.
+
+For css just add it to the globals.css file in src/app/
+
+
+
+
+
+
+The folder structure basically sets it so that hypothetically www.pickletime.com/ leads to the home page.
+
+And www.pickletime.com/{folder name} leads to the page.jsx file for that respective folder.
+
+so www.pickletime.com/Report will display the page.jsx file in the report folder.
+
+Try these docs for more specific questions to how everything is setup
+https://nextjs.org/docs
+
