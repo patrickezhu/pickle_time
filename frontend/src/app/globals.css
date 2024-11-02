@@ -6,39 +6,72 @@
   position: absolute;
   text-align: center;
   color: black;
-  font-size: 150px;
+  font-size: 75px;
   font-family: Epilogue;
   font-weight: 600;
   line-height: 280px;
   word-wrap: break-word;
 }
 
-.greenbubble {
-  width: 919px;
-  height: 267px;
-  left: 450px;
-  top: 25px;
-  position: absolute;
-  background: #B5FF81;
+.container{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 95vh;
+}
+
+.greenBubble {
+  width: 70%;
+  height: auto;
+  margin: auto;
+  text-align: center;
+  background-color: #B5FF81;
+  border-radius: 60px;
+  font-size: 75px;
+  font-family: Epilogue;
+  font-weight: 600;
+  padding: 2%;
+}
+
+.homePageImage {
+  max-width: 70%;
+  height: auto;
+  display: block;
+  margin: auto;
+  margin-top: 2%;
+  border: 5px solid black;
   border-radius: 60px;
 }
 
+
+.buttonContainer {
+  text-align: center;
+}
+
 .button1 {
+  width: 70%;
+  padding: 2%;
+  height: auto;
+  margin-top: 2%;
+  text-align: center;
   color: white;
   background: black;
-  font-size: 64px;
+  font-size: 40px;
   font-family: Epilogue;
   font-weight: 600;
-  line-height: 150px;
-  word-wrap: break-word;
+  border-radius: 30px;
 }
 
 .button2 {
+  width: 70%;
+  height: auto;
+  padding: 2%;
+  margin-top: 2%;
+  text-align: center;
   color: black;
   background: #B5FF81;
-  font-size: 64px;
+  font-size: 40px;
   font-family: Epilogue;
   font-weight: 600;
-  line-height: 150px;
-  word-wrap: break-word;
+  border-radius: 30px;
 }
