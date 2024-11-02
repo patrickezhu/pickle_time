@@ -83,7 +83,6 @@
   max-width: 200px;
   position: relative;
   border-radius: 5px;
-  align-self: center;
 }
 
 .dropdown .options {
@@ -96,7 +95,7 @@
   visibility: hidden;
 }
 
-.dropdown .option.visible {
+.dropdown .options.visible {
   opacity: 1;
   visibility: visible;
 }
