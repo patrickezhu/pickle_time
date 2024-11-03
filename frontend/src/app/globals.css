@@ -128,3 +128,18 @@
 .dropdown .toggle:hover {
   background-color: #ccc;
 }
+
+.infoSpace {
+  width: 30%;
+  float: left;
+}
+
+.imageSpace {
+  width: 70%;
+  float: right;
+}
+
+.courtImage {
+  width: 80%;
+  height: 80%;
+}

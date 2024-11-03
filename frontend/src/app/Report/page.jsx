@@ -70,7 +70,7 @@ export default function Home() {
 
       <div>
         <label>
-          Text input: <input name="myInput" defaultValue="Some initial value"/>
+          Wait Time Estimation (in minutes): <input name="waitTime"/>
         </label>
       </div>
 
@@ -81,7 +81,7 @@ export default function Home() {
 
       <div>
         <label>
-          Additional Details \(# of teams waiting, etc\):
+          Additional Details (# of teams waiting, etc):
           <textarea
             name="details"
             rows={4}
