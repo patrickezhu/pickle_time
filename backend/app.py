@@ -1,4 +1,5 @@
-from flask import Flask, jsonify
+import base64
+from flask import Flask, jsonify, request
 import sqlite3
 
 app = Flask(__name__)
@@ -44,6 +45,21 @@ def home():
 def api():
     return jsonify(message='Welcome to the Pickle Time API')
 
+
+# GET get list of parks
+#{
+# "parks": [ 
+#           {
+#               "id": integer
+#               "name": string
+#           },
+#           {
+#               "id": integer
+#               "name": string
+#           }
+#          ]
+#}
+
 @app.route('/api/parks', methods=['GET'])
 def parks():
     with get_db() as conn:
@@ -60,20 +76,30 @@ def parks():
             })
     return jsonify({"parks": result})
 
+# POST submit report for a park, id given to represent the park
+# {
+#     "park_id": integer
+#     "wait_time": string
+#     "image": base64
+# }
+@app.route('/api/report', methods=['POST'])
+def post_report():
+    data = request.get_json()
+    park_id, wait_time, image_base64 = data['park_id'], data['wait_time'], data['image']
 
-# GET get list of parks
-#{
-# "parks": [ 
-#           {
-#               "id": integer
-#               "name": string
-#           },
-#           {
-#               "id": integer
-#               "name": string
-#           }
-#          ]
-#}
+    image_data = base64.b64decode(image_base64)
+
+    with get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO reports (park_id, wait_time, image_data)
+            VALUES (?, ?, ?)
+        ''', (park_id, wait_time, image_data))
+        conn.commit()
+        report_id = cursor.lastrowid
+        conn.close()
+    
+    return jsonify({"report_id": report_id, "status": "success"}), 201
 
 
 # GET data of specific park, park id passed as query parameter
@@ -83,13 +109,6 @@ def parks():
 #     "images": [encoded images]
 #     "lastReported": string (hours/minutes ago) 
 # }
-
-# POST submit report for a park, id given to represent the park
-#{
-# "park_id": integer
-# "waitTime": string (minutes)
-# "photo": binary encoded image
-#}
 
 
 if __name__ == '__main__':
