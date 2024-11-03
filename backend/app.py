@@ -1,4 +1,5 @@
 import base64
+import datetime
 from flask import Flask, jsonify, request
 import sqlite3
 
@@ -80,12 +81,12 @@ def parks():
 # {
 #     "park_id": integer
 #     "wait_time": string
-#     "image": base64
+#     "image_base64": base64
 # }
 @app.route('/api/report', methods=['POST'])
 def post_report():
     data = request.get_json()
-    park_id, wait_time, image_base64 = data['park_id'], data['wait_time'], data['image']
+    park_id, wait_time, image_base64 = data['park_id'], data['wait_time'], data['image_base64']
 
     image_data = base64.b64decode(image_base64)
 
@@ -104,11 +105,61 @@ def post_report():
 
 # GET data of specific park, park id passed as query parameter
 # {
-#     "parkName": string
-#     "waitTime": string (minutes)
-#     "images": [encoded images]
-#     "lastReported": string (hours/minutes ago) 
+#     "name": string
+#     "wait_time": string
+#     "images": [
+#         {"image_base64": base64},
+#         {"image_base64": base64}
+#     ]
+#     "last_reported": string (hours/minutes ago) 
 # }
+@app.route('/api/park/<int:park_id>', methods=['GET'])
+def get_park_data(park_id):
+    with get_db() as conn:
+        cursor = conn.cursor()
+
+        cursor.execute("SELECT name FROM parks WHERE id = ?", (park_id,))
+        park = cursor.fetchone()
+        if not park:
+            return jsonify({"error": "Park not found"}), 404
+        
+        cursor.execute('''
+            SELECT wait_time, created_at, image_data
+            FROM reports
+            WHERE park_id = ?
+            ORDER BY created_at DESC
+        ''', (park_id,))
+        
+        reports = cursor.fetchall()
+        
+        if not reports:
+            return jsonify({
+                "name": park["name"],
+                "wait_time": "No reports available",
+                "images": [],
+                "last_reported": "No reports available"
+            })
+
+        # Extract latest wait time and images
+        latest_report = reports[0]
+        wait_time = latest_report['wait_time']
+        created_at = datetime.strptime(latest_report['created_at'], "%Y-%m-%d %H:%M:%S")
+
+        # Calculate how long ago the report was
+        time_difference = datetime.now() - created_at
+        last_reported = f"{time_difference.seconds // 3600} hours ago" if time_difference.seconds >= 3600 \
+            else f"{time_difference.seconds // 60} minutes ago"
+
+        # Convert images to base64
+        images = [{"image_base64": base64.b64encode(report['image_data']).decode('utf-8')} for report in reports]
+
+        return jsonify({
+            "name": park["name"],
+            "wait_time": f"{wait_time} minutes",
+            "images": images,
+            "last_reported": last_reported
+        })
+
 
 
 if __name__ == '__main__':
