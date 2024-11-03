@@ -7,6 +7,8 @@ def get_db():
     conn = sqlite3.connect('database.db')
     return conn
 
+
+# one park maps to many reports. Can SELECT all reports where park_id = the id of the park we want, then can filter the records to return the correct response in GET park details
 def init_db():
     with get_db() as conn:
         conn.execute('''
@@ -32,6 +34,7 @@ def init_db():
         parks = cursor.fetchall()
         if(len(parks) == 0):
             conn.execute('INSERT INTO parks (name) VALUES (?)', ('Leslie Park',))
+            conn.execute('INSERT INTO parks (name) VALUES (?)', ('Burns Park',))
 
 @app.route('/', methods=['GET'])
 def home():
@@ -60,11 +63,20 @@ def parks():
 
 # GET get list of parks
 #{
-# "parks": [ of park names ]
+# "parks": [ 
+#           {
+#               "id": integer
+#               "name": string
+#           },
+#           {
+#               "id": integer
+#               "name": string
+#           }
+#          ]
 #}
 
 
-# GET data of specific park, park Name passed as query parameter
+# GET data of specific park, park id passed as query parameter
 # {
 #     "parkName": string
 #     "waitTime": string (minutes)
@@ -72,9 +84,9 @@ def parks():
 #     "lastReported": string (hours/minutes ago) 
 # }
 
-# POST submit report for a park
+# POST submit report for a park, id given to represent the park
 #{
-# "parkName": string
+# "park_id": integer
 # "waitTime": string (minutes)
 # "photo": binary encoded image
 #}
