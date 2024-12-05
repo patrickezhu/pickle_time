@@ -40,50 +40,51 @@ export default function Home() {
 
   return (
     <div>
+      <div className="flexColumn infoSpace">
+        <div className="container">
+          <label className="myLabel">Choose Park</label>
+          <div className="dropdown" ref={dropdownRef}>
+            <button className="toggle" onClick={() => {
+              setDropdownToggled(!dropdownToggled)
+            }}>
+              <span>{selectedPark ? selectedPark.label : "Select Park"}</span>
+              <span>{dropdownToggled ? '-' : '+'}</span>
+            </button>
+            <div className={`options ${dropdownToggled ? "visible" : ""}`}>
+              {dropdownOptions.map((option, index) => {
+                return (
+                  <button 
+                  key={index}
+                  onClick={() => {
+                    setSelectedPark(option)
+                    setDropdownToggled(false)
+                  }}>{option.label}</button>
+                )
+              })}
+            </div>
+          </div>
 
-      <div className="infoSpace">
-        <label>Choose Park</label>
-        <div className="dropdown" ref={dropdownRef}>
-          <button className="toggle" onClick={() => {
-            setDropdownToggled(!dropdownToggled)
-          }}>
-            <span>{selectedPark ? selectedPark.label : "Select Park"}</span>
-            <span>{dropdownToggled ? '-' : '+'}</span>
-          </button>
-          <div className={`options ${dropdownToggled ? "visible" : ""}`}>
-            {dropdownOptions.map((option, index) => {
-              return (
-                <button 
-                key={index}
-                onClick={() => {
-                  setSelectedPark(option)
-                  setDropdownToggled(false)
-                }}>{option.label}</button>
-              )
-            })}
+          <div className="myLabel">
+              Current estimated wait time: 
+          </div>
+          <div>
+            <input name="waitTime" readOnly={true}/>
+          </div>
+
+          <div className="myLabel">
+              Last Reported: 
+          </div>
+          <div>
+            <input name="lastReport" readOnly={true}/>
           </div>
         </div>
-
-        <div>
-          <label>
-            Current estimated wait time: <input name="waitTime" readOnly={true}/>
-          </label>
+        <div className="buttonDiv">
+          <button className="homeButton" type="submit">Home</button>
         </div>
-
-        <div>
-          <label>
-            Last Reported: <input name="lastReport" readOnly={true}/>
-          </label>
-        </div>
-
-        <button type="submit">Home</button>
       </div>
-
-
       <div className="imageSpace">
-        <img className="courtImage" src="imagespace.png" alt="Court Image"></img>
+          <img className="courtImage" src="imagespace.png" alt="Court Image"></img>
       </div>
-
     </div>
   );
 }

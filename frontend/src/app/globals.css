@@ -16,8 +16,8 @@
 .container {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  height: 95vh;
+  justify-content: flex-start;
+  height: auto;
 }
 
 .greenBubble {
@@ -84,7 +84,6 @@
   position: relative;
   border-radius: 5px;
 }
-
 .dropdown .options {
   position: absolute;
   top: 100%;
@@ -110,6 +109,11 @@
   background-color: #eee;
   transition: background-color 0.05s ease;
   cursor: pointer;
+  border-radius: 60px;
+}
+
+.dropdown .toggle{
+  background-color: #B5FF81;
 }
 
 .dropdown .options button {
@@ -117,29 +121,98 @@
 }
 
 .dropdown .options button.selected {
-  background-color: #ddd;
   cursor: default;
 }
 
 .dropdown .options button:hover {
   background-color: #ddd;
+  background-color: #B5FF81;
 }
 
 .dropdown .toggle:hover {
   background-color: #ccc;
 }
 
-.infoSpace {
-  width: 30%;
-  float: left;
+
+@media screen and (min-width: 800px) {
+  .infoSpace {
+    width: 40%;
+    float: left;
+  }
+  .imageSpace {
+    width: 60%;
+    float: right;
+  }
 }
 
-.imageSpace {
-  width: 70%;
-  float: right;
+@media screen and (max-width: 800px) {
+  .infoSpace {
+    width: 100%;
+    float: left;
+  }
+  .imageSpace {
+    width: 100%;
+    float: right;
+  }
 }
 
 .courtImage {
-  width: 80%;
-  height: 80%;
+  width: 90%;
+  height: 90%;
+  float:right;
+  padding: 5%;
+}
+
+.green {
+  background-color: #B5FF81;
+}
+
+.fiftyWidth{
+  width: 50%;
+}
+
+.myLabel {
+  color: black;
+  font-size: 32px;
+  font-family: Epilogue;
+  font-weight: 600;
+  padding-top: 3%;
+  padding-bottom: 2%;
+}
+
+.pageButton{
+  width: 45%;
+  height: auto;
+  margin: auto;
+  text-align: center;
+  background-color: #B5FF81;
+  border-radius: 60px;
+  font-size: 32px;
+  font-family: Epilogue;
+  font-weight: 600;
+  padding: 2%;
+  margin: 2%;
+  margin-bottom: 10%;
+}
+
+.homeButton{
+  width: 45%;
+  height: auto;
+  margin: auto;
+  text-align: center;
+  background-color: #DDD;
+  border-radius: 60px;
+  font-size: 32px;
+  font-family: Epilogue;
+  font-weight: 600;
+  padding: 2%;
+  margin: 2%;
+  margin-bottom: 10%;
+}
+
+.flexColumn {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
