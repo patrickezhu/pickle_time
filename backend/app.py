@@ -1,9 +1,12 @@
 import base64
 import datetime
 from flask import Flask, jsonify, request
+from flask_cors import CORS
 import sqlite3
 
 app = Flask(__name__)
+
+CORS(app)
 
 def get_db():
     conn = sqlite3.connect('database.db')
@@ -26,7 +29,6 @@ def init_db():
             park_id INTEGER,
             wait_time INTEGER NOT NULL,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            image_data BLOB,
             FOREIGN KEY (park_id) REFERENCES parks (id)
         )
         ''')
@@ -86,21 +88,23 @@ def parks():
 @app.route('/api/report', methods=['POST'])
 def post_report():
     data = request.get_json()
-    park_id, wait_time, image_base64 = data['park_id'], data['wait_time'], data['image_base64']
-
-    image_data = base64.b64decode(image_base64)
+    try:
+        park_id = data['park_id']
+        wait_time = data['wait_time']
+    except KeyError as e:
+        return jsonify({"error": f"Missing required field: {str(e)}"}), 400
 
     with get_db() as conn:
         cursor = conn.cursor()
         cursor.execute('''
-            INSERT INTO reports (park_id, wait_time, image_data)
-            VALUES (?, ?, ?)
-        ''', (park_id, wait_time, image_data))
+            INSERT INTO reports (park_id, wait_time)
+            VALUES (?, ?)
+        ''', (park_id, wait_time))
         conn.commit()
         report_id = cursor.lastrowid
-        conn.close()
-    
+
     return jsonify({"report_id": report_id, "status": "success"}), 201
+
 
 
 # GET data of specific park, park id passed as query parameter

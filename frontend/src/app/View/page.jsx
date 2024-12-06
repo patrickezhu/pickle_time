@@ -6,6 +6,9 @@ export default function Home() {
   const [dropdownToggled, setDropdownToggled] = useState(false)
   const [selectedPark, setSelectedPark] = useState(null)
   const dropdownRef = useRef(null)
+  const [dropdownOptions, setDropdownOptions] = useState([]);
+
+  const baseUrl = 'http://localhost:5000';
 
   useEffect(() => {
     function handleDropdown(e) {
@@ -16,27 +19,32 @@ export default function Home() {
       }
     }
 
+    fetch(baseUrl + '/api/parks')
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);
+      setDropdownOptions(data.parks);
+    });
+
     document.addEventListener('click', handleDropdown)
 
     return () => {
       document.removeEventListener('click', handleDropdown)
     }
-  });
+  }, []);
 
-  const dropdownOptions = [
-    {
-      id: 1,
-      label: "Leslie Park",
-      value: "leslie-park",
-    },
-    {
-      id: 2,
-      label: "Gallup Park",
-      value: "gallup-park",
-    },
-  ];
-
-
+  // var dropdownOptions = [
+  //   {
+  //     id: 1,
+  //     label: "Leslie Park",
+  //     value: "leslie-park",
+  //   },
+  //   {
+  //     id: 2,
+  //     label: "Gallup Park",
+  //     value: "gallup-park",
+  //   },
+  // ];
 
   return (
     <div>
