@@ -3,6 +3,8 @@ import datetime
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 import sqlite3
+from pytz import timezone
+import pytz
 
 app = Flask(__name__)
 
@@ -122,45 +124,45 @@ def get_park_data(park_id):
     with get_db() as conn:
         cursor = conn.cursor()
 
+        # Fetch park name
         cursor.execute("SELECT name FROM parks WHERE id = ?", (park_id,))
         park = cursor.fetchone()
         if not park:
             return jsonify({"error": "Park not found"}), 404
         
+        # Fetch latest report for the park
         cursor.execute('''
-            SELECT wait_time, created_at, image_data
+            SELECT wait_time, created_at
             FROM reports
             WHERE park_id = ?
             ORDER BY created_at DESC
         ''', (park_id,))
-        
         reports = cursor.fetchall()
-        
+
         if not reports:
             return jsonify({
-                "name": park["name"],
+                "name": park[0],
                 "wait_time": "No reports available",
-                "images": [],
                 "last_reported": "No reports available"
             })
 
-        # Extract latest wait time and images
+        # Extract the latest report data
         latest_report = reports[0]
-        wait_time = latest_report['wait_time']
-        created_at = datetime.strptime(latest_report['created_at'], "%Y-%m-%d %H:%M:%S")
+        wait_time = latest_report[0]
+        created_at = datetime.datetime.strptime(latest_report[1], "%Y-%m-%d %H:%M:%S")
+
+        # Adjust to local timezone
+        utc_created_at = pytz.utc.localize(created_at)
+        local_created_at = utc_created_at.astimezone(timezone('America/New_York'))  # Change to your local timezone
 
         # Calculate how long ago the report was
-        time_difference = datetime.now() - created_at
+        time_difference = datetime.datetime.now(timezone('America/New_York')) - local_created_at
         last_reported = f"{time_difference.seconds // 3600} hours ago" if time_difference.seconds >= 3600 \
             else f"{time_difference.seconds // 60} minutes ago"
 
-        # Convert images to base64
-        images = [{"image_base64": base64.b64encode(report['image_data']).decode('utf-8')} for report in reports]
-
         return jsonify({
-            "name": park["name"],
+            "name": park[0],
             "wait_time": f"{wait_time} minutes",
-            "images": images,
             "last_reported": last_reported
         })
 
