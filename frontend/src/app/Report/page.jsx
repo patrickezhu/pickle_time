@@ -132,7 +132,7 @@ export default function Home() {
         </div>
       </div>
       <div className="imageSpace">
-        <img className="courtImage" src="imagespace.png" alt="Court Image"></img>
+        <img className="courtImage" src="Pickleball_game.jpg" alt="Court Image"></img>
       </div>
     </div>
   );
