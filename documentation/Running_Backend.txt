@@ -1,0 +1,7 @@
+
+Need to have python installed before you can run it.
+
+1. navigate to the pickle_time/backend directory
+2. run command: source venv/bin/activate
+3. run command: pip install -r requirements.txt
+4. run command: python3 app.py
