@@ -1,11 +1,19 @@
 'use client'
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
   const [dropdownToggled, setDropdownToggled] = useState(false)
-  const [selectedPark, setSelectedPark] = useState(null)
+  const [selectedParkId, setSelectedParkId] = useState(null);
+  const [selectedParkName, setSelectedParkName] = useState(null);
+  const [dropdownOptions, setDropdownOptions] = useState([]);
+  const [waitTime, setWaitTime] = useState(0);
+  const [successMessage, setSuccessMessage] = useState("");
   const dropdownRef = useRef(null)
+  const router = useRouter();
+
+  const baseUrl = 'http://localhost:5000';
 
   useEffect(() => {
     function handleDropdown(e) {
@@ -16,29 +24,49 @@ export default function Home() {
       }
     }
 
+    fetch(baseUrl + '/api/parks')
+    .then(response => response.json())
+    .then(data => {
+      setDropdownOptions(data.parks);
+    });
+
     document.addEventListener('click', handleDropdown)
 
     return () => {
       document.removeEventListener('click', handleDropdown)
     }
-  });
+  }, []);
 
-  const dropdownOptions = [
-    {
-      id: 1,
-      label: "Leslie Park",
-      value: "leslie-park",
-    },
-    {
-      id: 2,
-      label: "Gallup Park",
-      value: "gallup-park",
-    },
-  ];
-
+  function homeClick(){
+    router.push('/');
+  }
 
   function handleSubmit() {
     //send post request to api endpoint
+    if(selectedParkId != null && selectedParkId >= 0 && waitTime >= 0){
+      const data = {
+        'park_id': selectedParkId,
+        'wait_time': waitTime
+      };
+      fetch(baseUrl + '/api/report', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json', // Inform the server that JSON data is being sent
+        },
+        body: JSON.stringify(data)
+      })
+      .then((response) => {
+        return response.json()
+      })
+      .then((data) => {
+        console.log(data);
+        setSuccessMessage("Report Succesfully Made");
+      });
+    }
+    else{
+      setSuccessMessage("Invalid Report Data");
+    }
+    
   }
 
   return (
@@ -52,7 +80,7 @@ export default function Home() {
             <button className="toggle" onClick={() => {
               setDropdownToggled(!dropdownToggled)
             }}>
-              <span>{selectedPark ? selectedPark.label : "Select Park"}</span>
+              <span>{selectedParkName ? selectedParkName : "Select Park"}</span>
               <span>{dropdownToggled ? '-' : '+'}</span>
             </button>
             <div className={`options ${dropdownToggled ? "visible" : ""}`}>
@@ -61,9 +89,10 @@ export default function Home() {
                   <button 
                   key={index}
                   onClick={() => {
-                    setSelectedPark(option)
+                    setSelectedParkName(option.name)
+                    setSelectedParkId(option.id)
                     setDropdownToggled(false)
-                  }}>{option.label}</button>
+                  }}>{option.name}</button>
                 )
               })}
             </div>
@@ -73,7 +102,7 @@ export default function Home() {
               Wait Time Estimation (in minutes): 
           </div>
           <div >
-            <input name="waitTime"/>
+            <input name="waitTime" value={waitTime} onChange={e => setWaitTime(e.target.value)}/>
           </div>
 
           <div className="myLabel">
@@ -93,13 +122,13 @@ export default function Home() {
                 cols={40}
               />
           </div>
-          <div>
-
+          <div className="myResult">
+              {successMessage}
           </div>
         </div>
         <div className="buttonDiv">
-          <button className="homeButton fiftyWidth" type="submit">Home</button>
-          <button className="pageButton fiftyWidth" type="submit">Submit</button>
+          <button className="homeButton fiftyWidth" type="submit" onClick={homeClick}>Home</button>
+          <button className="pageButton fiftyWidth" type="submit" onClick={handleSubmit}>Submit</button>
         </div>
       </div>
       <div className="imageSpace">

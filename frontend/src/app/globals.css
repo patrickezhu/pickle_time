@@ -216,3 +216,11 @@
   flex-direction: column;
   justify-content: space-between;
 }
+
+
+.myResult {
+  color: green;
+  font-size: 28px;
+  font-family: Epilogue;
+  font-weight: 600;
+}

@@ -1,12 +1,17 @@
 'use client'
 import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
-  const [dropdownToggled, setDropdownToggled] = useState(false)
-  const [selectedPark, setSelectedPark] = useState(null)
-  const dropdownRef = useRef(null)
+  const [dropdownToggled, setDropdownToggled] = useState(false);
+  const [selectedParkId, setSelectedParkId] = useState(null);
+  const [selectedParkName, setSelectedParkName] = useState(null);
+  const dropdownRef = useRef(null);
   const [dropdownOptions, setDropdownOptions] = useState([]);
+  const [lastReported, setLastReported] = useState("Select a park to see");
+  const [waitTime, setWaitTime] = useState("Select a park to see");
+  const router = useRouter();
 
   const baseUrl = 'http://localhost:5000';
 
@@ -22,7 +27,6 @@ export default function Home() {
     fetch(baseUrl + '/api/parks')
     .then(response => response.json())
     .then(data => {
-      console.log(data);
       setDropdownOptions(data.parks);
     });
 
@@ -33,18 +37,20 @@ export default function Home() {
     }
   }, []);
 
-  // var dropdownOptions = [
-  //   {
-  //     id: 1,
-  //     label: "Leslie Park",
-  //     value: "leslie-park",
-  //   },
-  //   {
-  //     id: 2,
-  //     label: "Gallup Park",
-  //     value: "gallup-park",
-  //   },
-  // ];
+  useEffect(() => {
+    if(selectedParkId != null){
+      fetch(baseUrl + '/api/park/' + selectedParkId)
+      .then(response => response.json())
+      .then(data => {
+        setLastReported(data.last_reported);
+        setWaitTime(data.wait_time);
+      });
+    }
+  }, [selectedParkId]);
+
+  function homeClick(){
+    router.push('/');
+  }
 
   return (
     <div>
@@ -55,7 +61,7 @@ export default function Home() {
             <button className="toggle" onClick={() => {
               setDropdownToggled(!dropdownToggled)
             }}>
-              <span>{selectedPark ? selectedPark.label : "Select Park"}</span>
+              <span>{selectedParkName ? selectedParkName : "Select Park"}</span>
               <span>{dropdownToggled ? '-' : '+'}</span>
             </button>
             <div className={`options ${dropdownToggled ? "visible" : ""}`}>
@@ -64,9 +70,10 @@ export default function Home() {
                   <button 
                   key={index}
                   onClick={() => {
-                    setSelectedPark(option)
+                    setSelectedParkName(option.name);
+                    setSelectedParkId(option.id);
                     setDropdownToggled(false)
-                  }}>{option.label}</button>
+                  }}>{option.name}</button>
                 )
               })}
             </div>
@@ -75,19 +82,19 @@ export default function Home() {
           <div className="myLabel">
               Current estimated wait time: 
           </div>
-          <div>
-            <input name="waitTime" readOnly={true}/>
+          <div className="myResult">
+            {waitTime}
           </div>
 
           <div className="myLabel">
               Last Reported: 
           </div>
-          <div>
-            <input name="lastReport" readOnly={true}/>
+          <div className="myResult">
+            {lastReported}
           </div>
         </div>
         <div className="buttonDiv">
-          <button className="homeButton" type="submit">Home</button>
+          <button className="homeButton" type="submit" onClick={homeClick}>Home</button>
         </div>
       </div>
       <div className="imageSpace">
